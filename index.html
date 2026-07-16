@@ -275,7 +275,12 @@ function setStatus(msg, ok){
   clearTimeout(setStatus._t); setStatus._t = setTimeout(function(){ s.textContent=""; s.className="status"; }, 3500);
 }
 
-// render an empty signature on open; fields start blank
+// prefill with generic sample values so the preview shows a complete signature on open
+$("name").value = "Jane Doe";
+$("title").value = "Chief Technology Officer";
+$("email").value = "jane@example.com";
+$("phone").value = "123-456-7890";
+$("linkedin").value = "https://www.linkedin.com/in/janedoe";
 render();
 </script>
 </body>
