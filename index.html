@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Email Signature Builder</title>
+<style>
+  :root{
+    --bg:#ffffff; --panel:#f7f7f6; --ink:#17181a; --muted:#8b8d90;
+    --line:#e7e7e5; --line2:#d0d0d0; --accent:#D9331D; --accent-ink:#bd2c19;
+    --radius:12px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:#ececeb; color:var(--ink);
+    font-family:-apple-system,system-ui,"Segoe UI",Roboto,Arial,sans-serif;
+    padding:28px 16px; line-height:1.45;
+  }
+  .app{
+    max-width:1000px; margin:0 auto; background:var(--bg);
+    border:1px solid var(--line); border-radius:var(--radius); overflow:hidden;
+    display:grid; grid-template-columns:390px 1fr;
+  }
+  .hd{grid-column:1 / -1; padding:22px 26px; border-bottom:1px solid var(--line);}
+  .hd h1{margin:0; font-size:17px; font-weight:650; letter-spacing:-.01em;}
+  .hd p{margin:4px 0 0; font-size:13px; color:var(--muted);}
+
+  /* left: form */
+  .form{padding:24px 26px; border-right:1px solid var(--line);}
+  .grouplbl{font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); margin:0 0 10px;}
+  .seg{display:flex; gap:6px; margin-bottom:22px;}
+  .seg button{
+    flex:1; padding:9px 6px; font-size:12.5px; font-weight:600; cursor:pointer;
+    background:#fff; color:var(--ink); border:1px solid var(--line2); border-radius:8px;
+    transition:background .12s,border-color .12s,color .12s;
+  }
+  .seg button:hover{border-color:#a9a9a9;}
+  .seg button[aria-pressed="true"]{background:var(--accent); border-color:var(--accent); color:#fff;}
+  .field{margin-bottom:16px;}
+  .field label{display:block; font-size:12px; font-weight:600; margin:0 0 6px; color:#3a3b3d;}
+  .field .opt{color:var(--muted); font-weight:500;}
+  .field input{
+    width:100%; padding:10px 12px; font-size:14px; font-family:inherit; color:var(--ink);
+    background:#fff; border:1px solid var(--line2); border-radius:8px; outline:none;
+    transition:border-color .12s, box-shadow .12s;
+  }
+  .field input:focus{border-color:var(--accent); box-shadow:0 0 0 3px rgba(217,51,29,.12);}
+
+  /* right: preview */
+  .out{padding:24px 26px; background:var(--panel); display:flex; flex-direction:column;}
+  .canvas{
+    background:#fff; border:1px solid var(--line); border-radius:10px;
+    padding:30px 28px; min-height:150px; display:flex; align-items:center;
+  }
+  .actions{display:flex; gap:10px; align-items:center; margin-top:18px; flex-wrap:wrap;}
+  .btn{
+    border:none; border-radius:8px; padding:10px 16px; font-size:13px; font-weight:650;
+    cursor:pointer; font-family:inherit;
+  }
+  .btn.primary{background:var(--accent); color:#fff;}
+  .btn.primary:hover{background:var(--accent-ink);}
+  .btn.ghost{background:#fff; color:var(--ink); border:1px solid var(--line2);}
+  .btn.ghost:hover{border-color:#a9a9a9;}
+  .status{font-size:12.5px; color:var(--muted);}
+  .status.ok{color:#1a7f37;}
+  details{margin-top:16px;}
+  summary{font-size:12px; font-weight:600; color:var(--muted); cursor:pointer; list-style:none;}
+  summary::-webkit-details-marker{display:none;}
+  summary::before{content:"› "; }
+  details[open] summary::before{content:"⌄ "; }
+  textarea{
+    width:100%; height:150px; margin-top:10px; border:1px solid var(--line2); border-radius:8px;
+    background:#111; color:#e6e6e6; font-family:ui-monospace,Menlo,Consolas,monospace;
+    font-size:11px; line-height:1.55; padding:12px; resize:vertical; outline:none;
+  }
+  .hint{font-size:12px; color:var(--muted); margin:14px 0 0; line-height:1.6;}
+  .hint b{color:#3a3b3d; font-weight:650;}
+
+  @media (max-width:780px){
+    .app{grid-template-columns:1fr;}
+    .form{border-right:none; border-bottom:1px solid var(--line);}
+  }
+  @media (prefers-reduced-motion:reduce){*{transition:none !important;}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="hd">
+    <h1>Email signature builder</h1>
+    <p>Pick your division, fill in your details, and copy your signature.</p>
+  </div>
+
+  <div class="form">
+    <p class="grouplbl">Division</p>
+    <div class="seg" id="seg" role="group" aria-label="Division"></div>
+
+    <div class="field">
+      <label for="name">Full name</label>
+      <input id="name" type="text" placeholder="Harrison Powers" autocomplete="name">
+    </div>
+    <div class="field">
+      <label for="title">Job title</label>
+      <input id="title" type="text" placeholder="Head of Finance and Operations">
+    </div>
+    <div class="field">
+      <label for="email">Work email</label>
+      <input id="email" type="email" placeholder="harrison@gamechangers.vc" autocomplete="email">
+    </div>
+    <div class="field">
+      <label for="phone">Phone <span class="opt">- optional</span></label>
+      <input id="phone" type="tel" placeholder="410-978-7788">
+    </div>
+    <div class="field">
+      <label for="linkedin">LinkedIn URL <span class="opt">- optional</span></label>
+      <input id="linkedin" type="url" placeholder="https://www.linkedin.com/in/hgpowers">
+    </div>
+  </div>
+
+  <div class="out">
+    <p class="grouplbl">Preview</p>
+    <div class="canvas"><div id="preview"></div></div>
+    <div class="actions">
+      <button class="btn primary" id="copyRich">Copy signature</button>
+      <button class="btn ghost" id="copySrc">Copy HTML</button>
+      <span class="status" id="status"></span>
+    </div>
+    <details>
+      <summary>View HTML source</summary>
+      <textarea id="source" readonly></textarea>
+    </details>
+    <p class="hint">
+      <b>Copy signature</b> puts the formatted version on your clipboard. Paste it straight into
+      Gmail (Settings, See all settings, Signature) or Outlook (Settings, Mail, Compose and reply).
+      If your client only accepts code, use <b>Copy HTML</b> instead.
+    </p>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   DIVISION CONFIG  —  edit the name and website for each division.
+   Logo image URLs are already set to the files hosted on the site.
+   ============================================================ */
+var BASE = "https://www.gamechangers.vc/assets/logos/";
+var DIVISIONS = {
+  gcv:   { label:"GCV",           name:"Game Changers Ventures", logo:BASE+"gcv-mark.png",   url:"https://www.gamechangers.vc/" },
+  eberg: { label:"Eberg Capital", name:"Eberg Capital",          logo:BASE+"eberg-mark.png", url:"https://www.ebergcapital.com/" },
+  bd:    { label:"Brand:Detroit", name:"Brand:Detroit",          logo:BASE+"bd-mark.png",    url:"https://www.branddetroit.com/" }
+};
+var ICON = { email:BASE+"email.png", website:BASE+"website.png", linkedin:BASE+"linkedin.png" };
+/* Per-division logo height in px. A wide wordmark (GCV) and compact symbols
+   (the Eberg ring, the Brand:Detroit mark) do not look even at a single height,
+   so the symbols get a little more height. Nudge these while watching the
+   preview until the three look balanced to you. */
+var HEIGHTS = { gcv:34, eberg:58, bd:54 };
+var ratios  = { gcv:2.74, eberg:1.01, bd:1.55 };   // fallback until the real image is measured
+/* ============================================================ */
+
+var state = { div:"gcv" };
+var $ = function(id){ return document.getElementById(id); };
+var esc = function(s){ return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); };
+
+// build the division segmented control
+var seg = $("seg");
+Object.keys(DIVISIONS).forEach(function(key){
+  var b = document.createElement("button");
+  b.type = "button";
+  b.textContent = DIVISIONS[key].label;
+  b.setAttribute("aria-pressed", key===state.div ? "true":"false");
+  b.addEventListener("click", function(){
+    state.div = key;
+    Array.prototype.forEach.call(seg.children, function(c){ c.setAttribute("aria-pressed","false"); });
+    b.setAttribute("aria-pressed","true");
+    render();
+  });
+  seg.appendChild(b);
+});
+
+// measure each logo's real aspect ratio from the hosted image
+Object.keys(DIVISIONS).forEach(function(key){
+  var im = new Image();
+  im.onload = function(){
+    if(im.naturalWidth && im.naturalHeight){
+      ratios[key] = im.naturalWidth / im.naturalHeight;
+      if(state.div === key) render();
+    }
+  };
+  im.src = DIVISIONS[key].logo;
+});
+
+function logoWidth(key){ return Math.max(1, Math.round((HEIGHTS[key]||40) * (ratios[key] || 2))); }
+
+function buildSig(){
+  var d = DIVISIONS[state.div];
+  var name  = ($("name").value || "").trim();
+  var title = ($("title").value || "").trim();
+  var email = ($("email").value || "").trim();
+  var phone = ($("phone").value || "").trim();
+  var li    = ($("linkedin").value || "").trim();
+  var w = logoWidth(state.div);
+
+  var phoneDigits = phone.replace(/[^0-9]/g,"");
+  var phoneTel = phoneDigits.length === 10 ? "+1" + phoneDigits : "+" + phoneDigits;
+  var phoneBlock = phone
+    ? '<div style="font-size:12px;color:#777;line-height:1.85;padding-top:10px;"><a href="tel:'+esc(phoneTel)+'" style="color:#777;text-decoration:none;">'+esc(phone)+'</a></div>'
+    : '';
+
+  var liCell = li
+    ? '<td style="padding:12px 0 0 0;"><a href="'+esc(li)+'"><img src="'+ICON.linkedin+'" width="22" height="22" alt="LinkedIn" style="display:block;border:0;"></a></td>'
+    : '';
+
+  return ''
+  + '<table cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;font-family:\'PP Neue Montreal\',\'Neue Montreal\',\'Helvetica Neue\',Arial,Helvetica,sans-serif;">'
+  +   '<tr>'
+  +     '<td style="vertical-align:middle;padding:0 22px 0 0;">'
+  +       '<img src="'+d.logo+'" width="'+w+'" height="'+(HEIGHTS[state.div]||40)+'" alt="'+esc(d.name)+'" style="display:block;border:0;">'
+  +     '</td>'
+  +     '<td style="vertical-align:middle;border-left:1px solid #d0d0d0;padding:0 0 0 22px;">'
+  +       '<div style="font-size:20px;letter-spacing:2.5px;color:#4a4a4a;line-height:1.3;">'+esc(name.toUpperCase())+'</div>'
+  +       '<div style="font-size:12px;color:#9a9a9a;line-height:1.5;letter-spacing:.3px;padding-top:3px;">'+esc(title)+'</div>'
+  +       '<div style="font-size:12px;color:#9a9a9a;line-height:1.5;letter-spacing:.3px;">'+esc(d.name)+'</div>'
+  +       phoneBlock
+  +       '<table cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;"><tr>'
+  +         '<td style="padding:12px 8px 0 0;"><a href="mailto:'+esc(email)+'"><img src="'+ICON.email+'" width="22" height="22" alt="Email" style="display:block;border:0;"></a></td>'
+  +         '<td style="padding:12px 8px 0 0;"><a href="'+esc(d.url)+'"><img src="'+ICON.website+'" width="22" height="22" alt="Website" style="display:block;border:0;"></a></td>'
+  +         liCell
+  +       '</tr></table>'
+  +     '</td>'
+  +   '</tr>'
+  + '</table>';
+}
+
+function render(){
+  var html = buildSig();
+  $("preview").innerHTML = html;
+  $("source").value = html;
+}
+
+["name","title","email","phone","linkedin"].forEach(function(id){
+  $(id).addEventListener("input", render);
+});
+
+$("copyRich").addEventListener("click", function(){
+  var html = buildSig();
+  var done = function(){ setStatus("Copied. Paste into your signature settings.", true); };
+  if(window.ClipboardItem && navigator.clipboard && navigator.clipboard.write){
+    var item = new ClipboardItem({
+      "text/html": new Blob([html], {type:"text/html"}),
+      "text/plain": new Blob([html], {type:"text/plain"})
+    });
+    navigator.clipboard.write([item]).then(done).catch(function(){ fallbackCopy(html); done(); });
+  } else { fallbackCopy(html); done(); }
+});
+
+$("copySrc").addEventListener("click", function(){
+  var t = $("source"); t.select();
+  navigator.clipboard.writeText(t.value).then(function(){ setStatus("HTML copied.", true); })
+    .catch(function(){ document.execCommand("copy"); setStatus("HTML copied.", true); });
+});
+
+function fallbackCopy(html){
+  var t = $("source"); t.value = html; t.select(); document.execCommand("copy");
+}
+function setStatus(msg, ok){
+  var s = $("status"); s.textContent = msg; s.className = "status" + (ok ? " ok" : "");
+  clearTimeout(setStatus._t); setStatus._t = setTimeout(function(){ s.textContent=""; s.className="status"; }, 3500);
+}
+
+// seed with sample values so the preview is not empty on open
+$("name").value = "Harrison Powers";
+$("title").value = "Head of Finance and Operations";
+$("email").value = "harrison@gamechangers.vc";
+$("phone").value = "410-978-7788";
+$("linkedin").value = "https://www.linkedin.com/in/hgpowers";
+render();
+</script>
+</body>
+</html>
