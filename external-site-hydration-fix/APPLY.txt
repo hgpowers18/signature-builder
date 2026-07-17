@@ -1,0 +1,42 @@
+gamechangers.vc hydration fix (React #418)
+==========================================
+
+Confirmed in Firefox + Chromium against https://www.gamechangers.vc/
+Error: Minified React error #418 (server HTML != client)
+
+This Cursor agent only has access to hgpowers18/signature-builder.
+The Next.js / Payload site (Vercel: gcv-external-website) is in a private
+repo this token cannot see. Apply the changes below in THAT repo, then
+redeploy.
+
+Where to edit (from production bundle paths)
+--------------------------------------------
+1) app/(frontend) HomePage client component
+   - Search for: hero-mobile.mp4
+   - Apply: 01-hero-video.fix.tsx
+   - Change: do NOT call window.matchMedia inside useState initializer.
+     Default to /assets/hero.mp4; switch in useEffect / matchMedia change listener.
+
+2) AppShell / tweak shell client component (layout)
+   - Search for: show_cursor && window.matchMedia
+   - Apply: 02-custom-cursor.fix.tsx
+   - Change: never call matchMedia during render.
+     Use useSyncExternalStore with server snapshot `false`, or useState(false)+useEffect.
+     Only then mount <CustomCursor />.
+
+3) Optional cleanup
+   - Search for: animationDelay: 0.1 *
+   - Apply: 03-mosaic-delay.fix.tsx (use `${i * 100}ms`)
+
+Verify
+------
+1. npm run dev / deploy preview
+2. Firefox + Chrome, desktop and width < 760
+3. Console must NOT show React error #418
+4. Custom cursor still appears on fine-pointer desktops
+5. Mobile gets /assets/hero-mobile.mp4 after mount (src may update post-hydration; that is OK)
+
+To finish via Cursor Cloud
+--------------------------
+Relaunch this task on the private external-site repo (or paste its
+GitHub URL here) and ask to apply external-site-hydration-fix/.
