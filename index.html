@@ -103,12 +103,12 @@
       <input id="title" type="text" placeholder="Chief Technology Officer">
     </div>
     <div class="field">
-      <label for="email">Work email</label>
-      <input id="email" type="email" placeholder="jane@example.com" autocomplete="email">
-    </div>
-    <div class="field">
       <label for="phone">Phone <span class="opt">- optional</span></label>
       <input id="phone" type="tel" inputmode="numeric" maxlength="12" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" placeholder="123-456-7890">
+    </div>
+    <div class="field">
+      <label for="twitter">X (Twitter) URL <span class="opt">- optional</span></label>
+      <input id="twitter" type="url" placeholder="https://x.com/janedoe">
     </div>
     <div class="field">
       <label for="linkedin">LinkedIn URL <span class="opt">- optional</span></label>
@@ -147,7 +147,7 @@ var DIVISIONS = {
   eberg: { label:"Eberg Capital", name:"Eberg Capital",          logo:BASE+"eberg-mark.png", url:"https://www.ebergcapital.com/" },
   bd:    { label:"Brand:Detroit", name:"Brand:Detroit",          logo:BASE+"bd-mark.png",    url:"https://www.branddetroit.com/" }
 };
-var ICON = { email:BASE+"email.png", website:BASE+"website.png", linkedin:BASE+"linkedin.png" };
+var ICON = { x:BASE+"x.png", website:BASE+"website.png", linkedin:BASE+"linkedin.png" };
 /* Per-division logo height in px. A wide wordmark (GCV) and compact symbols
    (the Eberg ring, the Brand:Detroit mark) do not look even at a single height,
    so the symbols get a little more height. Nudge these while watching the
@@ -194,7 +194,7 @@ function buildSig(){
   var d = DIVISIONS[state.div];
   var name  = ($("name").value || "").trim();
   var title = ($("title").value || "").trim();
-  var email = ($("email").value || "").trim();
+  var twitter = ($("twitter").value || "").trim();
   var phone = ($("phone").value || "").trim();
   var li    = ($("linkedin").value || "").trim();
   var w = logoWidth(state.div);
@@ -203,6 +203,10 @@ function buildSig(){
   var phoneTel = phoneDigits.length === 10 ? "+1" + phoneDigits : "+" + phoneDigits;
   var phoneBlock = phone
     ? '<div style="font-size:12px;color:#777;line-height:1.85;padding-top:10px;"><a href="tel:'+esc(phoneTel)+'" style="color:#777;text-decoration:none;">'+esc(phone)+'</a></div>'
+    : '';
+
+  var xCell = twitter
+    ? '<td style="padding:12px 8px 0 0;"><a href="'+esc(twitter)+'"><img src="'+ICON.x+'" width="22" height="22" alt="X" style="display:block;border:0;"></a></td>'
     : '';
 
   var liCell = li
@@ -221,7 +225,7 @@ function buildSig(){
   +       '<div style="font-size:12px;color:#9a9a9a;line-height:1.5;letter-spacing:.3px;">'+esc(d.name)+'</div>'
   +       phoneBlock
   +       '<table cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;"><tr>'
-  +         '<td style="padding:12px 8px 0 0;"><a href="mailto:'+esc(email)+'"><img src="'+ICON.email+'" width="22" height="22" alt="Email" style="display:block;border:0;"></a></td>'
+  +         xCell
   +         '<td style="padding:12px 8px 0 0;"><a href="'+esc(d.url)+'"><img src="'+ICON.website+'" width="22" height="22" alt="Website" style="display:block;border:0;"></a></td>'
   +         liCell
   +       '</tr></table>'
@@ -245,7 +249,7 @@ function formatPhone(v){
 }
 $("phone").addEventListener("input", function(){ this.value = formatPhone(this.value); });
 
-["name","title","email","phone","linkedin"].forEach(function(id){
+["name","title","twitter","phone","linkedin"].forEach(function(id){
   $(id).addEventListener("input", render);
 });
 
@@ -278,7 +282,7 @@ function setStatus(msg, ok){
 // prefill with generic sample values so the preview shows a complete signature on open
 $("name").value = "Jane Doe";
 $("title").value = "Chief Technology Officer";
-$("email").value = "jane@example.com";
+$("twitter").value = "https://x.com/janedoe";
 $("phone").value = "123-456-7890";
 $("linkedin").value = "https://www.linkedin.com/in/janedoe";
 render();
